@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+
+  <GraphQlClientGenerator_ServiceUrl>http://localhost:8080/query</GraphQlClientGenerator_ServiceUrl>
+  <!-- GraphQlClientGenerator_Namespace is optional; if omitted the first compilation unit namespace will be used -->
+  <GraphQlClientGenerator_Namespace>Dagger</GraphQlClientGenerator_Namespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GraphQlClientGenerator" Version="0.9.*"  IncludeAssets="analyzers" />
+    <CompilerVisibleProperty Include="GraphQlClientGenerator_ServiceUrl" />
+    <CompilerVisibleProperty Include="GraphQlClientGenerator_Namespace" />
+  </ItemGroup>
+
+</Project>
