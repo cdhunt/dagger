@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="GraphQlClientGenerator" Version="0.9.*"  IncludeAssets="analyzers" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <CompilerVisibleProperty Include="GraphQlClientGenerator_ServiceUrl" />
     <CompilerVisibleProperty Include="GraphQlClientGenerator_Namespace" />
   </ItemGroup>
