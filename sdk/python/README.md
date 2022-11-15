@@ -57,7 +57,8 @@ $ python say.py "Simple is better than complex"
 
 ## Learn more
 
-- [Documentation](https://docs.dagger.io)
+- [Documentation](https://docs.dagger.io/sdk/python)
+- [API Reference](https://dagger-io.readthedocs.org)
 - [Source code](https://github.com/dagger/dagger/tree/main/sdk/python)
 
 ## Development
@@ -68,12 +69,14 @@ Requirements:
 - [Poetry](https://python-poetry.org/docs/)
 - [Docker](https://docs.docker.com/engine/install/)
 
-Start enviornment with `poetry install`.
+Start environment with `poetry install`.
 
 Run tests with `poetry run poe test`.
 
 Reformat code with `poetry run poe fmt` or just check with `poetry run poe lint`.
 
 Re-regenerate client with `poetry run poe generate`.
+
+Build reference docs with `poetry run poe docs`.
 
 Tip: You don't need to prefix the previous commands with `poetry run` if you activate the virtualenv with `poetry shell`.

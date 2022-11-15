@@ -13,13 +13,10 @@ from gql.transport import AsyncTransport, Transport
 
 from dagger import Client, SyncClient
 
+from .engine_version import ENGINE_IMAGE_REF
+
 logger = logging.getLogger(__name__)
 
-
-ENGINE_IMAGE_REF = (
-    "ghcr.io/dagger/engine:test@sha256:"
-    "a10730b1d305644b87c21630d27d9e15d424014ee7ac9bd44f4504fcfe92a8ca"
-)
 DEFAULT_HOST = f"docker-image://{ENGINE_IMAGE_REF}"
 
 

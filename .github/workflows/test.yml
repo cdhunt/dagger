@@ -6,6 +6,8 @@ on:
       - "**.go"
       - "go.mod"
       - "go.sum"
+      - "**/go.mod"
+      - "**/go.sum"
       - "sdk/nodejs/**.js"
       - "sdk/python/**.py"
       - ".github/workflows/test.yml"
@@ -34,21 +36,17 @@ jobs:
         with:
           go-version: 1.19
       - uses: actions/checkout@v3
-      - name: build
-        uses: magefile/mage-action@v2
-        with:
-          version: latest
-          args: engine:build
-      - run: cp ./bin/cloak /usr/local/bin
-      - name: test
-        uses: magefile/mage-action@v2
-        with:
-          version: latest
-          args: engine:test
+      - run: ./hack/make engine:build
+      - run: echo `pwd`/bin >> $GITHUB_PATH
+      - run: ./hack/make engine:test
       - name: Print Engine Logs
         if: always()
         run: |
           docker logs test-dagger-engine
+      - name: Print Kernel Logs
+        if: always()
+        run: |
+          sudo dmesg
   engine-race:
     needs: [engine] # prioritize fast feedback + don't bother if tests fail
     name: engine with -race
@@ -58,43 +56,38 @@ jobs:
         with:
           go-version: 1.19
       - uses: actions/checkout@v3
-      - run: go install $(pwd)/cmd/cloak/
-      - name: test
-        uses: magefile/mage-action@v2
-        with:
-          version: latest
-          args: engine:testrace
+      - run: ./hack/make engine:build
+      - run: echo `pwd`/bin >> $GITHUB_PATH
+      - run: ./hack/make engine:testrace
       - name: Print Engine Logs
         if: always()
         run: |
           docker logs test-dagger-engine
+      - name: Print Kernel Logs
+        if: always()
+        run: |
+          sudo dmesg
   sdk-go:
     name: sdk / go
-    runs-on: ubuntu-22.04-16c-64g-600gb
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v3
         with:
           go-version: 1.19
-      - uses: magefile/mage-action@v2
-        with:
-          version: latest
-          args: sdk:go:test
+      - run: ./hack/make sdk:go:test
   sdk-python:
     name: sdk / python
-    runs-on: ubuntu-22.04-16c-64g-600gb
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v3
         with:
           go-version: 1.19
-      - uses: magefile/mage-action@v2
-        with:
-          version: latest
-          args: sdk:python:test
+      - run: ./hack/make sdk:python:test
   sdk-nodejs:
     name: sdk / nodejs
-    runs-on: ubuntu-22.04-16c-64g-600gb
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-go@v3
         with:
@@ -103,7 +96,11 @@ jobs:
         with:
           # ⚠️  Keep this in sync with https://github.com/dagger/dagger/blob/main/package.json#L14
           node-version: 16
+      - run: npm install -g yarn
       - uses: actions/checkout@v3
-      - run: go install $(pwd)/cmd/cloak/
+      - run: ./hack/make engine:build
+      - run: echo `pwd`/bin >> $GITHUB_PATH
       - run: yarn install
-      - run: yarn run test-sdk
+        working-directory: sdk/nodejs
+      - run: yarn run test
+        working-directory: sdk/nodejs
