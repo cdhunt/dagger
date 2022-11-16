@@ -25,6 +25,14 @@ function Start-DaggerEngineSession {
         $oldProcess.Kill()
     }
 
+    $dataReceiveHander = {
+        param ([object]$source, [Diagnostics.DataReceivedEventArgs]$err)
+
+        if (![string]::IsNullOrEmpty($err.Data)) {
+            Write-Error -Message $err.Data -TargetObject $source
+        }
+    }
+
     $startInfo = New-Object System.Diagnostics.ProcessStartInfo
     $startInfo.FileName = $binaryPath
     $startInfo.RedirectStandardError = $true
@@ -32,9 +40,18 @@ function Start-DaggerEngineSession {
     $startInfo.RedirectStandardInput = $true
     $startInfo.UseShellExecute = $false
 
+    Write-Verbose "Started $binaryPath"
     $engineProcess = New-Object System.Diagnostics.Process
     $engineProcess.StartInfo = $startInfo
+    $engineProcess.EnableRaisingEvents = $true
+
+    Register-ObjectEvent -InputObject $engineProcess -EventName ErrorDataReceived -Action $dataReceiveHander
+    Register-ObjectEvent -InputObject $engineProcess -EventName Exited -Action $dataReceiveHander
+
     $startResult = $engineProcess.Start()
+    $engineProcess.BeginErrorReadLine()
+
+    Write-Verbose "Start result $startResult"
 
     $Writer = $engineProcess.StandardInput
     $Writer.WriteLine("ping")
@@ -49,6 +66,7 @@ function Start-DaggerEngineSession {
     if ($output -notmatch "\d{4,5}") {
         Write-Error -Message "Failed to start `"$binaryPath`". No TCP Port available." -Category InvalidResult -RecommendedAction "Check that the user has access to run `"$binaryPath`"."
     }
+
     Write-Verbose "localhost:$output"
     Write-Output $output
 }
