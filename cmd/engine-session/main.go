@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime"
 	"syscall"
 	"time"
 
@@ -56,11 +57,13 @@ func EngineSession(cmd *cobra.Command, args []string) {
 		panic(err)
 	}
 
-	// shutdown if requested via signal
-	go func() {
-		<-signalCh
-		l.Close()
-	}()
+	if runtime.GOOS != "windows" {
+		// shutdown if requested via signal
+		go func() {
+			<-signalCh
+			l.Close()
+		}()
+	}
 
 	// shutdown if our parent closes stdin
 	go func() {
