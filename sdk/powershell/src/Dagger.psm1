@@ -2,6 +2,9 @@
 . "$PSScriptRoot\Stop-DaggerEngineSession.ps1"
 . "$PSScriptRoot\DSL.ps1"
 . "$PSScriptRoot\Invoke-DaggerQuery.ps1"
+. "$PSScriptRoot\Write-EngineOutput.ps1"
+. "$PSScriptRoot\Get-Weather.ps1"
+
 
 $Writer = $null
 #$Port = Start-DaggerEngineSession
@@ -25,14 +28,6 @@ if ($oldProcess) {
     $oldProcess.Kill()
 }
 
-$dataReceiveHander = [scriptblock] {
-    param ([object]$source, [Diagnostics.DataReceivedEventArgs]$err)
-
-    if (![string]::IsNullOrEmpty($err.Data)) {
-        $message = "($source) $($err.Data)"
-        $message
-    }
-}
 
 $startInfo = New-Object System.Diagnostics.ProcessStartInfo
 $startInfo.FileName = $binaryPath
@@ -45,6 +40,15 @@ Write-Verbose "Started $binaryPath"
 $engineProcess = New-Object System.Diagnostics.Process
 $engineProcess.StartInfo = $startInfo
 $engineProcess.EnableRaisingEvents = $true
+
+$dataReceiveHander = [scriptblock] {
+    param ([object]$source, [Diagnostics.DataReceivedEventArgs]$err)
+
+    if (![string]::IsNullOrEmpty($err.Data)) {
+        $message = "($($engineProcess.Id)) $($err.Data)"
+        $message
+    }
+}
 
 $errorEvents = Register-ObjectEvent -InputObject $engineProcess -EventName ErrorDataReceived -Action $dataReceiveHander
 $exitEvents = Register-ObjectEvent -InputObject $engineProcess -EventName Exited -Action $dataReceiveHander

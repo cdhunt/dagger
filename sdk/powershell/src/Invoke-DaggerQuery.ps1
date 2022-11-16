@@ -13,6 +13,4 @@ function Invoke-DaggerQuery {
 
     Invoke-GraphQLQuery -Query $queryText -Uri $Uri
 
-    $engineOutput = $errorEvents | Receive-Job
-    $engineOutput | Write-Verbose
 }

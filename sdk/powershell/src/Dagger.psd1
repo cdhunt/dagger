@@ -12,7 +12,7 @@
     RootModule         = 'Dagger.psm1'
 
     # Version number of this module.
-    ModuleVersion      = '0.0.3'
+    ModuleVersion      = '0.0.4'
     # Supported PSEditions
     # CompatiblePSEditions = @()
 
@@ -68,7 +68,7 @@
     # NestedModules = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport  = 'Query', 'Container', 'WithFrom', 'WithExec', 'Stdout', 'Contents', 'Invoke-DaggerQuery', 'Start-DaggerEngineSession', 'Stop-DaggerEngineSession'
+    FunctionsToExport  = 'Query', 'Container', 'WithFrom', 'WithExec', 'Stdout', 'Contents', 'Invoke-DaggerQuery', 'Start-DaggerEngineSession', 'Stop-DaggerEngineSession', 'Write-EngineOutput', 'Get-Weather'
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
     #CmdletsToExport   = '*'

@@ -68,6 +68,7 @@ function Start-DaggerEngineSession {
     }
 
     Write-Verbose "localhost:$output"
-    Write-Output $output
+    $Port = $output
+    $Uri = 'http://localhost:{0}/query' -f $Port
 }
 
