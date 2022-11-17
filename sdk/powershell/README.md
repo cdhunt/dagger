@@ -48,8 +48,9 @@ Copy PowerShell files to "C:\...\sdk\powershell\output\Dagger"
 
 The build script will:
 
-1. Build the .Net DaggerSdk.dll with the types dynamically generated from the GraphSQL Schema
+1. Build the .Net `DaggerSdk.dll` with the types dynamically generated from the GraphQL Schema
 2. Build the `dagger-engine-session` binaries for multiple platforms
+   - Requires [gox](https://github.com/mitchellh/gox)
 3. Copy the necessary PowerShell files into the folder structure expected for `Publish-Module`
 
 ## To Use
@@ -58,8 +59,12 @@ Follow the above build instructions and then run `Import-Module output\Dagger`.
 
 \- or -
 
-Run `Install-Module -Name Dagger` to get the lasted published version from [owershellgallery.com](https://www.powershellgallery.com/packages/Dagger/0.0.4).
+Run `Install-Module -Name Dagger` to get the lasted published version from [powershellgallery.com](https://www.powershellgallery.com/packages/Dagger/0.0.4).
 The Dagger binaries are packaged with the module so no external dependencies are necessary.
+Run `Import-Module Dagger`.
+
+When the module is loaded, it will start up the `dagger-engine-session` binary for your platform.
+If the process stops unexpectedly, you can run `Import-Module Dagger -Force` to restart the service.
 
 ## Examples
 
@@ -78,8 +83,94 @@ The Dagger binaries are packaged with the module so no external dependencies are
                 0.0 in
 ```
 
+The PowerShell syntax closely resembles the GraphQL query structure.
+The output of the Query function is a `QueryQueryBuilder` object.
+
+```powershell
+PS > $query = Query {
+        Container {
+            WithFrom alpine {
+                WithExec "apk", "add", "curl" {
+                    WithExec "curl", "https://wttr.in/$Location$urlQuery" {
+                        Stdout {
+                            Contents
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+PS > $query
+                                                                                                                                                      AllFields
+---------
+{cacheVolume, container, defaultPlatform, directory…}
+```
+
+If you call the `Build()` method you get back a stringified query that can be used with any GraphQL client.
+
+```powershell
+#Compressed
+PS > $query.Build()
+query{container{from(address:"alpine"){exec(args:["apk","add","curl"]){exec(args:["curl","https://wttr.in/"]){stdout{contents}}}}}}
+
+# Pretty
+PS > $query.Build("Indented")
+query {
+  container {
+    from(address: "alpine") {
+      exec(args: [
+        "apk",
+        "add",
+        "curl"]) {
+        exec(args: [
+          "curl",
+          "https://wttr.in/"]) {
+          stdout {
+            contents
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+`Invoke-DaggerQuery` takes a `QueryQueryBuilder` object, sends it to the server and serializes the JSON response.
+
+```powershell
+PS > $data = $query | Invoke-DaggerQuery
+
+PS > $data
+
+data
+----
+@{container=}
+
+PS > $data.data.container.from.exec.exec.stdout.contents
+Weather report: not found
+
+     \  /       Partly cloudy
+   _ /"".-.     -8(-13) °C
+     \_(   ).   ↙ 7 km/h
+     /(___(__)  10 km
+                0.0 mm
+```
+
 The `Write-EngineOutput` cmdlet will show you the output from the Dagger engine.
 Output is logged asynchronously and may not line up exactly with commands you've run.
+
+```powershell
+PS > Write-EngineOutput
+() #1 resolve image config for docker.io/library/alpine:latest
+() #1 DONE 11.8s
+() #2 mkfile /Dockerfile
+() #2 DONE 0.0s
+() #3 CACHED
+...
+```
+
+When you close the Dagger engine session run `Stop-DaggerEngineSession`.
 
 ## Prior Art
 
