@@ -4,7 +4,7 @@ This "SDK" is a proof-of-concept exploring a PowerShell language interface for D
 
 ## How to build
 
-1. Run `cload dev`.
+1. Run `cloak dev`.
     - Update `DaggerSdk.csproj` if you need to change the port for the service.
 
      ```xml
