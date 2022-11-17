@@ -59,6 +59,7 @@ Follow the above build instructions and then run `Import-Module output\Dagger`.
 \- or -
 
 Run `Install-Module -Name Dagger` to get the lasted published version from [owershellgallery.com](https://www.powershellgallery.com/packages/Dagger/0.0.4).
+The Dagger binaries are packaged with the module so no external dependencies are necessary.
 
 ## Examples
 
