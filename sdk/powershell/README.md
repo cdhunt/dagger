@@ -172,6 +172,11 @@ PS > Write-EngineOutput
 
 When you close the Dagger engine session run `Stop-DaggerEngineSession`.
 
+## TODO
+
+- Build the module with the module
+- Generate DSL.ps1 automatically
+
 ## Prior Art
 
 This project heavily leans on two existing projects
